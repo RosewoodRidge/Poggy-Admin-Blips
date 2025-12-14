@@ -6,7 +6,7 @@
 local DEBUG = false
 
 -- Whitelist: Only these Steam Names (Display Names) can see blips
-local ALLOWED_NAMES = {
+local ALLOWED_NAMES = (Config and Config.ALLOWED_NAMES) or {
     "Soup",
     "Poggy"
 }

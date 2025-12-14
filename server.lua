@@ -17,7 +17,7 @@ local UPDATE_INTERVAL = 500
 local PENDING_RETRY_INTERVAL = 5000
 
 -- Admin groups: Which groups can see blips
-local ADMIN_GROUPS = {
+local ADMIN_GROUPS = (Config and Config.ADMIN_GROUPS) or {
     "admin",
     "superadmin"
 }
@@ -39,13 +39,20 @@ AddEventHandler('vorp_admin_blips:registerAdmin', function()
     
     local User = Core.getUser(_source)
     if User then
-        local group = User.getGroup
-        debugLog("Player " .. _source .. " has group: " .. tostring(group))
+        local userGroup = User.getGroup
+        local charGroup = nil
+        
+        local Character = User.getUsedCharacter
+        if Character then
+            charGroup = Character.group
+        end
+
+        debugLog("Player " .. _source .. " has User group: " .. tostring(userGroup) .. " | Char group: " .. tostring(charGroup))
         
         -- Check if player's group is in the admin groups list
         local isAdmin = false
         for _, adminGroup in ipairs(ADMIN_GROUPS) do
-            if group == adminGroup then
+            if userGroup == adminGroup or charGroup == adminGroup then
                 isAdmin = true
                 break
             end
@@ -56,7 +63,7 @@ AddEventHandler('vorp_admin_blips:registerAdmin', function()
             adminBlipsHidden[_source] = false
             debugLog("^2Player " .. _source .. " registered as admin^7")
         else
-            debugLog("^1Player " .. _source .. " is not admin (group: " .. tostring(group) .. ")^7")
+            debugLog("^1Player " .. _source .. " is not admin (User: " .. tostring(userGroup) .. ", Char: " .. tostring(charGroup) .. ")^7")
         end
     else
         debugLog("^1Failed to get User object for player " .. _source .. "^7")
@@ -80,10 +87,16 @@ RegisterCommand('ahb', function(source, args, rawCommand)
         -- Check if they're an admin but haven't registered yet
         local User = Core.getUser(_source)
         if User then
-            local group = User.getGroup
+            local userGroup = User.getGroup
+            local charGroup = nil
+            local Character = User.getUsedCharacter
+            if Character then
+                charGroup = Character.group
+            end
+
             local isAdmin = false
             for _, adminGroup in ipairs(ADMIN_GROUPS) do
-                if group == adminGroup then
+                if userGroup == adminGroup or charGroup == adminGroup then
                     isAdmin = true
                     break
                 end

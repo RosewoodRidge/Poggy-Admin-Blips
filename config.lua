@@ -30,8 +30,6 @@ Config.ADMIN_GROUPS = {
 -- Whitelist: Only these Steam Names (Display Names) can see blips
 -- If empty, all players in ADMIN_GROUPS will see blips
 Config.ALLOWED_NAMES = {
-    "Soup",
-    "Poggy"
 }
 
 -- Blip appearance
